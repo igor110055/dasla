@@ -2,8 +2,12 @@ class RecommandList < ApplicationRecord
 
   def self.recommand_content(domains)
     "🚀 Register your favourite DAS accounts  #domains  #NFTs
+
 🔥 Recommended list:
-#{p domains.join('\n')}
+
+#{domains.join('
+')}
+
 👉 Register & Get more: https://das.la/"
   end
 
