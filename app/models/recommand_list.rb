@@ -3,12 +3,12 @@ class RecommandList < ApplicationRecord
   def self.recommand_content(domains)
     "🚀 Register your favourite DAS accounts  #domains  #NFTs
 🔥 Recommended list:
-#{domains.join('\n')}
+#{p domains.join('\n')}
 👉 Register & Get more: https://das.la/"
   end
 
   def self.check_domains
-    domains = select_domains
+    domains = RecommandList.where(is_reg: false, is_recommand: false).order('random()').limit(10)
     $twitter_client.update(RecommandList.recommand_content(domains.pluck(:domain)))
     domains.update_all(is_recommand: true)
   end
