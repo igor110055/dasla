@@ -52,5 +52,39 @@ class RecommandList < ApplicationRecord
       break lists if lists.all?{|list| !list.check_is_reg}
     end
   end
+
+  def self.check_lay2_account_CKB
+    ckbs = []
+    (1..18811).to_a.each do |i|
+      url = "https://www.layerview.io/zh-CN/account/#{i}"
+      data = RestClient.get(url).body
+      json = JSON.parse data.match(/"application\/json">(.*)<\/script><script nom/)[1]
+      ckbs << json['props']['pageProps']['ckb'].to_s.gsub(',', '').to_f
+      p [i, ckbs.last]
+    end
+  end
+
+  def self.check_ckb_price(operation = false)
+    binance_url = 'https://vapi.binance.com/api/v3/avgPrice?symbol=CKBUSDT'
+    ave_url = 'https://avedex.cc/v1api/v1/tokens/0xe934f463d026d97f6ce0a10215d0ac4224f0a930-nervos'
+    key = 'c7517aca2ff3a32d0c6aa145cfeb8fc5bd958f1c1638848696042'
+    b_price = JSON.parse(RestClient.get(binance_url).body)['price'].to_f rescue 0
+    y_price = JSON.parse(CGI.unescape(Base64::decode64(JSON.parse(RestClient.get(ave_url, headers={'Authorization' => key}).body)['encode_data'])))['token']['current_price_usd'].to_f rescue 0
+    if operation
+      if b_price - y_price >= 0.0006
+        post_alert("币安：#{b_price},YOK：#{y_price}")
+      end
+    else
+      if y_price - b_price >= 0.0006
+        post_alert("币安：#{b_price},YOK：#{y_price}")
+      end
+    end
+  end
+
+  def post_alert(content = '')
+    key = ''
+    url = "https://sctapi.ftqq.com/#{key}.send"
+    RestClient.post(url, {title: '差价通知', desp: content})
+  end
   
 end

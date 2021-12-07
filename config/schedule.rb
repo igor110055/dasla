@@ -26,3 +26,7 @@ set :output, "#{RAILS_ROOT}/log/whenever.log"
 every 5.minutes do
   rake "twitter:recommand_account"
 end
+
+every 1.minutes do
+  rake "yok:binance_yok"
+end
