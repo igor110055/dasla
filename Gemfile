@@ -6,6 +6,8 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails', branch: 'main'
 gem 'rails', '~> 6.1.3', '>= 6.1.3.2'
 gem 'pg'
+gem 'mysql2', '~> 0.5'
+
 # Use Puma as the app server
 gem 'puma', '~> 3.11.4'
 # Use SCSS for stylesheets
@@ -59,3 +61,9 @@ gem 'whenever', require: false
 gem 'twitter'
 
 gem 'rest-client'
+
+gem 'ethereum.rb'
+
+gem 'eth'
+
+gem 'settingslogic'
