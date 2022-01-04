@@ -7,6 +7,7 @@ class Api::V1::DasAccountsController < ActionController::API
     render json: {account_num: Das::AccountInfo.count,
                   owner_num: Das::AccountInfo.select("distinct(owner)").count,
                   owner_chain_type_num: Das::AccountInfo.owner_chain_type_num,
+                  account_chain_num: Das::AccountInfo.account_chain_num,
                   owner_order: Das::AccountInfo.select("count(*) total, owner").group(:owner).order('total desc').limit(5).as_json(:except => :id)
                   }, status: :ok
   end
