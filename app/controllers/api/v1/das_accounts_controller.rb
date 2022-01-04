@@ -30,6 +30,15 @@ class Api::V1::DasAccountsController < ActionController::API
                      .group('index_day').order('index_day desc').as_json(:except => :id)
   end
 
+  def day_deal
+    begin_at = params[:begin_at].present? ? params[:begin_at].to_time.to_i*1000 : (Time.now - 3.months).to_i*1000
+    end_at = params[:end_at].present? ? params[:end_at].to_time.to_i*1000 : (Time.now).to_i*1000
+
+    render json: Das::TradeDealInfo.where("block_timestamp > ? and block_timestamp < ?", begin_at, end_at)
+                     .select("sum(price_ckb) as ckb_total, sum(price_usd) as usd_total, DATE_FORMAT(FROM_UNIXTIME(block_timestamp/1000),'%Y-%m-%d') index_day")
+                     .group('index_day').order('index_day desc').as_json(:except => :id)
+  end
+
 
 
 end
