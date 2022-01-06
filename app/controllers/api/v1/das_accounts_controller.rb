@@ -18,7 +18,7 @@ class Api::V1::DasAccountsController < ActionController::API
     owner_chain_type = params[:owner_chain_type].presence || 1
     render json: Das::AccountInfo.where("registered_at > ? and registered_at < ?", begin_at, end_at).where(owner_chain_type: owner_chain_type)
                      .select("count(*) as total, DATE_FORMAT(FROM_UNIXTIME(registered_at),'%Y-%m-%d') index_day")
-                     .group('index_day').order('index_day desc').as_json(:except => :id)
+                     .group('index_day').order('index_day asc').as_json(:except => :id)
   end
 
   def day_owner
@@ -27,7 +27,7 @@ class Api::V1::DasAccountsController < ActionController::API
     owner_chain_type = params[:owner_chain_type].presence || 1
     render json: Das::AccountInfo.where("registered_at > ? and registered_at < ?", begin_at, end_at).where(owner_chain_type: owner_chain_type)
                      .select("count(distinct(owner)) as total, DATE_FORMAT(FROM_UNIXTIME(registered_at),'%Y-%m-%d') index_day")
-                     .group('index_day').order('index_day desc').as_json(:except => :id)
+                     .group('index_day').order('index_day asc').as_json(:except => :id)
   end
 
   def day_deal
@@ -36,7 +36,7 @@ class Api::V1::DasAccountsController < ActionController::API
 
     render json: Das::TradeDealInfo.where("block_timestamp > ? and block_timestamp < ?", begin_at, end_at)
                      .select("sum(price_ckb) as ckb_total, sum(price_usd) as usd_total, DATE_FORMAT(FROM_UNIXTIME(block_timestamp/1000),'%Y-%m-%d') index_day")
-                     .group('index_day').order('index_day desc').as_json(:except => :id)
+                     .group('index_day').order('index_day asc').as_json(:except => :id)
   end
 
 
