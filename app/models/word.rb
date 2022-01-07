@@ -1,0 +1,5 @@
+class Word < ApplicationRecord
+
+
+
+end

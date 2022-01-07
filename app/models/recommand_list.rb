@@ -66,8 +66,8 @@ class RecommandList < ApplicationRecord
 
   def self.check_ckb_price(operation = false)
     binance_url = 'https://vapi.binance.com/api/v3/avgPrice?symbol=CKBUSDT'
-    ave_url = 'https://avedex.cc/v1api/v1/tokens/0xe934f463d026d97f6ce0a10215d0ac4224f0a930-nervos'
-    key = 'c7517aca2ff3a32d0c6aa145cfeb8fc5bd958f1c1638848696042'
+    ave_url = 'https://opencw.xyz/v1api/v1/tokens/0xe934f463d026d97f6ce0a10215d0ac4224f0a930-nervos'
+    key = '598cfc6f041d8c11477646176fff1820754af50f1639408667170'
     b_price = JSON.parse(RestClient.get(binance_url).body)['price'].to_f rescue 0
     y_price = JSON.parse(CGI.unescape(Base64::decode64(JSON.parse(RestClient.get(ave_url, headers={'Authorization' => key}).body)['encode_data'])))['token']['current_price_usd'].to_f rescue 0
     if operation
@@ -81,7 +81,7 @@ class RecommandList < ApplicationRecord
     end
   end
 
-  def post_alert(content = '')
+  def self.post_alert(content = '')
     key = ''
     url = "https://sctapi.ftqq.com/#{key}.send"
     RestClient.post(url, {title: '差价通知', desp: content})
