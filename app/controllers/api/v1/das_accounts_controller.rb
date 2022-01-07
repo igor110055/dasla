@@ -20,9 +20,8 @@ class Api::V1::DasAccountsController < ActionController::API
     else
       owner_chain_types = Das::AccountInfo::CHAIN_TYPE.keys
     end
-    render json:  Das::AccountInfo.select("index_day,count(owner) as total")
-                      .from("(select owner, DATE_FORMAT(FROM_UNIXTIME(min(registered_at)),'%Y-%m-%d') as index_day, min(owner_chain_type) as min_type from t_account_info
-                      where owner_chain_type in (#{owner_chain_types.join(',')}) and registered_at > #{begin_at} and registered_at < #{end_at} group by OWNER) ua")
+    render json:  Das::AccountInfo.where("registered_at > ? and registered_at < ?", begin_at, end_at).where(owner_chain_type: owner_chain_types)
+                      .select("count(*) as total, DATE_FORMAT(FROM_UNIXTIME(registered_at),'%Y-%m-%d') index_day")
                       .group('index_day').order('index_day asc').as_json(:except => :id), status: :ok
   end
 
@@ -34,8 +33,9 @@ class Api::V1::DasAccountsController < ActionController::API
     else
       owner_chain_types = Das::AccountInfo::CHAIN_TYPE.keys
     end
-    render json: Das::AccountInfo.where("registered_at > ? and registered_at < ?", begin_at, end_at).where(owner_chain_type: owner_chain_types)
-                     .select("count(distinct(owner)) as total, DATE_FORMAT(FROM_UNIXTIME(registered_at),'%Y-%m-%d') index_day")
+    render json: Das::AccountInfo.select("index_day,count(owner) as total")
+                     .from("(select owner, DATE_FORMAT(FROM_UNIXTIME(min(registered_at)),'%Y-%m-%d') as index_day, min(owner_chain_type) as min_type from t_account_info
+                      where owner_chain_type in (#{owner_chain_types.join(',')}) and registered_at > #{begin_at} and registered_at < #{end_at} group by OWNER) ua")
                      .group('index_day').order('index_day asc').as_json(:except => :id), status: :ok
   end
 
