@@ -67,3 +67,5 @@ gem 'ethereum.rb'
 gem 'eth'
 
 gem 'settingslogic'
+
+gem 'rack-cors'
