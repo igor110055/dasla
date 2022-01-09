@@ -4,7 +4,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :das_accounts, only: [:index] do
         collection do
-          get :sync_total, :daily_reg_count, :day_owner, :day_deal, :invitee_num, :account_length, :cloud_word
+          get :sync_total, :daily_reg_count, :daily_new_owner, :day_deal, :invitee_num, :account_length, :cloud_word
         end
       end
     end
