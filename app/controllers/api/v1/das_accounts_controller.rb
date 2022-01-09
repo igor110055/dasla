@@ -21,11 +21,11 @@ class Api::V1::DasAccountsController < ActionController::API
       owner_chain_types = Das::AccountInfo::CHAIN_TYPE.keys
     end
     render json:  Das::AccountInfo.where("registered_at > ? and registered_at < ?", begin_at, end_at).where(owner_chain_type: owner_chain_types)
-                      .select("count(*) as total, DATE_FORMAT(FROM_UNIXTIME(registered_at),'%Y-%m-%d') index_day")
-                      .group('index_day').order('index_day asc').as_json(:except => :id), status: :ok
+                      .select("count(*) as total, DATE_FORMAT(FROM_UNIXTIME(registered_at),'%Y-%m-%d') date")
+                      .group('date').order('date asc').as_json(:except => :id), status: :ok
   end
 
-  def day_owner
+  def daily_new_owner
     begin_at = params[:begin_at].present? ? params[:begin_at].to_time.to_i : (Time.now - 3.months).to_i
     end_at = params[:end_at].present? ? params[:end_at].to_time.to_i : (Time.now).to_i
     if params[:owner_chain_type].present?
@@ -33,10 +33,10 @@ class Api::V1::DasAccountsController < ActionController::API
     else
       owner_chain_types = Das::AccountInfo::CHAIN_TYPE.keys
     end
-    render json: Das::AccountInfo.select("index_day,count(owner) as total")
-                     .from("(select owner, DATE_FORMAT(FROM_UNIXTIME(min(registered_at)),'%Y-%m-%d') as index_day, min(owner_chain_type) as min_type from t_account_info
+    render json: Das::AccountInfo.select("date,count(owner) as total")
+                     .from("(select owner, DATE_FORMAT(FROM_UNIXTIME(min(registered_at)),'%Y-%m-%d') as date, min(owner_chain_type) as min_type from t_account_info
                       where owner_chain_type in (#{owner_chain_types.join(',')}) and registered_at > #{begin_at} and registered_at < #{end_at} group by OWNER) ua")
-                     .group('index_day').order('index_day asc').as_json(:except => :id), status: :ok
+                     .group('date').order('date asc').as_json(:except => :id), status: :ok
   end
 
   def day_deal
@@ -44,8 +44,8 @@ class Api::V1::DasAccountsController < ActionController::API
     end_at = params[:end_at].present? ? params[:end_at].to_time.to_i*1000 : (Time.now).to_i*1000
 
     render json: Das::TradeDealInfo.where("block_timestamp > ? and block_timestamp < ?", begin_at, end_at)
-                     .select("sum(price_ckb) as ckb_total, sum(price_usd) as usd_total, DATE_FORMAT(FROM_UNIXTIME(block_timestamp/1000),'%Y-%m-%d') index_day")
-                     .group('index_day').order('index_day asc').as_json(:except => :id), status: :ok
+                     .select("sum(price_ckb) as ckb_total, sum(price_usd) as usd_total, DATE_FORMAT(FROM_UNIXTIME(block_timestamp/1000),'%Y-%m-%d') date")
+                     .group('date').order('date asc').as_json(:except => :id), status: :ok
   end
 
   def invitee_num
@@ -62,7 +62,4 @@ class Api::V1::DasAccountsController < ActionController::API
   def cloud_word
     render json: Word.order('num desc').as_json(:except => :id), status: :ok
   end
-
-
-
 end
