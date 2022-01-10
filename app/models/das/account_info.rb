@@ -4,7 +4,7 @@ module Das
     self.table_name = 't_account_info'
 
     has_many :rebate_infos, class_name: 'Das::RebateInfo',foreign_key: :inviter_id, primary_key: :account_id
-
+    belongs_to :reverse_info, class_name: 'Das::ReverseInfo',foreign_key: :owner, primary_key: :address
 
     CHAIN_TYPE = {0 => 'CKB', 1 => 'ETH', 2 => 'BTC', 3 => 'TRON'}
     STATUS = {-1 => 'not_open_register', 0 => 'normal', 1 => 'on_sale', 2 => 'on_auction'}
