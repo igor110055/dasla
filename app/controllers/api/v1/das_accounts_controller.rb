@@ -8,7 +8,10 @@ class Api::V1::DasAccountsController < ActionController::API
                   owner_num: Das::AccountInfo.select("distinct(owner)").count,
                   owner_chain_type_num: Das::AccountInfo.owner_chain_type_num,
                   account_chain_num: Das::AccountInfo.account_chain_num,
-                  owner_order: Das::AccountInfo.left_outer_joins(:reverse_info).select("count(*) total,min(t_reverse_info.account) as reserve_record,owner").group(:owner).order('total desc').limit(10).as_json(:except => :id),
+                  owner_order: Das::AccountInfo.left_outer_joins(:reverse_info)
+                                   .select("count(*) total,min(t_reverse_info.account) as reserve_record,owner")
+                                   .group(:owner).order('total desc').limit(10)
+                                   .as_json(:except => :id).each{|i| i['reserve_record'] = i['reserve_record'].to_s},
                   update_time: Time.at(Das::AccountInfo.last.registered_at).strftime('%Y-%m-%d %H:%M:%S')
                   }, status: :ok
   end
