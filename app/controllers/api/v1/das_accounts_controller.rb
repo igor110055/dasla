@@ -59,7 +59,7 @@ class Api::V1::DasAccountsController < ActionController::API
                      .group('date').order('date asc').as_json(:except => :id), status: :ok
   end
 
-  def invitee_num
+  def invites_leaderboard
     render json: Das::AccountInfo.joins(:rebate_infos)
                      .select("account, count(*) invitee_num")
                      .group("account").order('invitee_num desc').limit(10).as_json(:except => :id), status: :ok
