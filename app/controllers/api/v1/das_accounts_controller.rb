@@ -12,6 +12,12 @@ class Api::V1::DasAccountsController < ActionController::API
                                    .select("count(*) total,min(t_reverse_info.account) as reverse_record,owner")
                                    .group(:owner).order('total desc').limit(10)
                                    .as_json(:except => :id).each{|i| i['reverse_record'] = i['reverse_record'].to_s},
+                  recent_reg_data: Das::AccountInfo.where("registered_at > ? ", (Time.now - 2.days).to_i)
+                                       .select("count(*) as count, DATE_FORMAT(FROM_UNIXTIME(registered_at),'%Y-%m-%d') date")
+                                       .group('date').order('date desc').as_json(:except => :id),
+                  recent_owner_data: Das::AccountInfo.select("date,count(owner) as total")
+                                         .from("(select owner, DATE_FORMAT(FROM_UNIXTIME(min(registered_at)),'%Y-%m-%d') as date from t_account_info where registered_at > #{(Time.now - 2.days).to_i} group by OWNER) ua")
+                                         .group('date').order('date desc').as_json(:except => :id),
                   update_time: Time.at(Das::AccountInfo.last.registered_at).strftime('%Y-%m-%d %H:%M:%S')
                   }, status: :ok
   end
