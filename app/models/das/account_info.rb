@@ -42,5 +42,51 @@ module Das
 
     end
 
+    def self.recent_reg_data
+      arr = Das::AccountInfo.where("registered_at > ? ", (Time.now - 2.days).beginning_of_day.to_i)
+                .select("DATE_FORMAT(FROM_UNIXTIME(registered_at),'%Y-%m-%d') date, count(*) as count")
+                .group('date').order('date asc').as_json(:except => :id)
+      complete_date(Time.now - 2.days, Time.now, arr, {'count' => 0})
+    end
+
+    def self.recent_owner_data
+      arr = Das::AccountInfo.select("date,count(owner) as count")
+          .from("(select owner, DATE_FORMAT(FROM_UNIXTIME(min(registered_at)),'%Y-%m-%d') as date,min(registered_at) as registered_at from t_account_info group by OWNER) ua")
+          .where("registered_at >= #{(Time.now - 2.days).beginning_of_day.to_i}")
+          .group('date').order('date asc').as_json(:except => :id)
+      complete_date(Time.now - 2.days, Time.now, arr, {'count' => 0})
+    end
+
+    def self.daily_reg_count(begin_at, end_at, owner_chain_types)
+      arr = Das::AccountInfo.where("registered_at > ? and registered_at < ?", begin_at, end_at).where(owner_chain_type: owner_chain_types)
+          .select("DATE_FORMAT(FROM_UNIXTIME(registered_at),'%Y-%m-%d') date,count(*) as total")
+          .group('date').order('date asc').as_json(:except => :id)
+      complete_date(Time.at(begin_at), Time.at(end_at), arr, {'total' => 0})
+    end
+
+    def self.daily_new_owner(begin_at, end_at, owner_chain_types)
+      arr = Das::AccountInfo.select("date,count(owner) as total")
+                .from("(select owner, DATE_FORMAT(FROM_UNIXTIME(min(registered_at)),'%Y-%m-%d') as date,min(registered_at) as registered_at,min(owner_chain_type) as min_type from t_account_info group by OWNER) ua")
+                .where("min_type in (#{owner_chain_types.join(',')}) and registered_at >= #{begin_at} and registered_at <= #{end_at}")
+                .group('date').order('date asc').as_json(:except => :id)
+      complete_date(Time.at(begin_at), Time.at(end_at), arr, {'total' => 0})
+    end
+
+    def day_deal(begin_at, end_at)
+      arr = Das::TradeDealInfo.where("block_timestamp > ? and block_timestamp < ?", begin_at, end_at)
+                .select("sum(price_ckb) as ckb_total, sum(price_usd) as usd_total, DATE_FORMAT(FROM_UNIXTIME(block_timestamp/1000),'%Y-%m-%d') date")
+                .group('date').order('date asc').as_json(:except => :id)
+      complete_date(Time.at(begin_at/1000), Time.at(end_at/1000), arr, {'ckb_total' => 0, 'usd_total' => 0})
+    end
+
+    def self.complete_date(begin_at, end_at , array, default = {})
+      new_array = []
+      (begin_at.to_date..end_at.to_date).each do |date|
+         check_data = array.find{|i| i['date'] ==  date.strftime('%Y-%m-%d')}
+         new_array << (check_data.present? ? check_data : {'date' => date.strftime('%Y-%m-%d')}.merge(default))
+      end
+      new_array
+    end
+    
   end
 end
