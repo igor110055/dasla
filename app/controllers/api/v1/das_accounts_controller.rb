@@ -15,7 +15,7 @@ class Api::V1::DasAccountsController < ActionController::API
                   recent_reg_data: Das::AccountInfo.where("registered_at > ? ", (Time.now - 2.days).to_i)
                                        .select("count(*) as count, DATE_FORMAT(FROM_UNIXTIME(registered_at),'%Y-%m-%d') date")
                                        .group('date').order('date desc').as_json(:except => :id),
-                  recent_owner_data: Das::AccountInfo.select("date,count(owner) as total")
+                  recent_owner_data: Das::AccountInfo.select("date,count(owner) as count")
                                          .from("(select owner, DATE_FORMAT(FROM_UNIXTIME(min(registered_at)),'%Y-%m-%d') as date from t_account_info where registered_at > #{(Time.now - 2.days).to_i} group by OWNER) ua")
                                          .group('date').order('date desc').as_json(:except => :id),
                   update_time: Time.at(Das::AccountInfo.last.registered_at).strftime('%Y-%m-%d %H:%M:%S')
