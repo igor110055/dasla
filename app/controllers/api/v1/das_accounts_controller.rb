@@ -16,7 +16,8 @@ class Api::V1::DasAccountsController < ActionController::API
                                        .select("count(*) as count, DATE_FORMAT(FROM_UNIXTIME(registered_at),'%Y-%m-%d') date")
                                        .group('date').order('date asc').as_json(:except => :id),
                   recent_owner_data: Das::AccountInfo.select("date,count(owner) as count")
-                                         .from("(select owner, DATE_FORMAT(FROM_UNIXTIME(min(registered_at)),'%Y-%m-%d') as date from t_account_info where registered_at > #{(Time.now - 2.days).beginning_of_day.to_i} group by OWNER) ua")
+                                         .from("(select owner, DATE_FORMAT(FROM_UNIXTIME(min(registered_at)),'%Y-%m-%d') as date, , min(registered_at) as registered_at from t_account_info group by OWNER) ua")
+                                         .where("registered_at >= #{(Time.now - 2.days).beginning_of_day.to_i}")
                                          .group('date').order('date asc').as_json(:except => :id),
                   update_time: Time.at(Das::AccountInfo.last.registered_at).strftime('%Y-%m-%d %H:%M:%S')
                   }, status: :ok
@@ -36,7 +37,7 @@ class Api::V1::DasAccountsController < ActionController::API
   end
 
   def daily_new_owner
-    begin_at = params[:begin_at].present? ? params[:begin_at].to_time.to_i : (Time.now - 3.months).to_i
+    begin_at = params[:begin_at].present? ? params[:begin_at].to_time.to_i : (Time.now - 3.months).beginning_of_day.to_i
     end_at = params[:end_at].present? ? params[:end_at].to_time.to_i : (Time.now).to_i
     if params[:owner_chain_type].present?
       owner_chain_types = [params[:owner_chain_type]]
@@ -44,8 +45,8 @@ class Api::V1::DasAccountsController < ActionController::API
       owner_chain_types = Das::AccountInfo::CHAIN_TYPE.keys
     end
     render json: Das::AccountInfo.select("date,count(owner) as total")
-                     .from("(select owner, DATE_FORMAT(FROM_UNIXTIME(min(registered_at)),'%Y-%m-%d') as date, min(owner_chain_type) as min_type from t_account_info
-                      where owner_chain_type in (#{owner_chain_types.join(',')}) and registered_at > #{begin_at} and registered_at < #{end_at} group by OWNER) ua")
+                     .from("(select owner, DATE_FORMAT(FROM_UNIXTIME(min(registered_at)),'%Y-%m-%d') as date, , min(registered_at) as registered_at,min(owner_chain_type) as min_type from t_account_info group by OWNER) ua")
+                      .where("min_type in (#{owner_chain_types.join(',')}) and registered_at >= #{begin_at} and registered_at <= #{end_at}")
                      .group('date').order('date asc').as_json(:except => :id), status: :ok
   end
 
