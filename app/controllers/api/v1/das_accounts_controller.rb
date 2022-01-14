@@ -4,8 +4,8 @@ class Api::V1::DasAccountsController < ActionController::API
   end
 
   def sync_total
-    render json: {account_num: Das::AccountInfo.where.not(account: '').count,
-                  owner_num: Das::AccountInfo.where.not(account: '').select("distinct(owner)").count,
+    render json: {account_num: Das::AccountInfo.where.not(owner: '0x0000000000000000000000000000000000000000').count,
+                  owner_num: Das::AccountInfo.where.not(owner: '0x0000000000000000000000000000000000000000').select("distinct(owner)").count,
                   owner_chain_type_num: Das::AccountInfo.owner_chain_type_num,
                   account_chain_num: Das::AccountInfo.account_chain_num,
                   owner_order: Das::AccountInfo.left_outer_joins(:reverse_info)
@@ -56,7 +56,7 @@ class Api::V1::DasAccountsController < ActionController::API
   end
 
   def account_length
-    render json: Das::AccountInfo.where.not(account: '').select('(length(account) - 4) account_length, count(*) account_num')
+    render json: Das::AccountInfo.where.not(owner: '0x0000000000000000000000000000000000000000').select('(length(account) - 4) account_length, count(*) account_num')
                      .group('account_length').order('account_num desc').as_json(:except => :id), status: :ok
   end
 
