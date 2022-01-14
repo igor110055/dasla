@@ -10,7 +10,7 @@ module Das
     STATUS = {-1 => 'not_open_register', 0 => 'normal', 1 => 'on_sale', 2 => 'on_auction'}
 
     def self.owner_chain_type_num
-      chain_type_num = Das::AccountInfo.where.not(owner: '0x0000000000000000000000000000000000000000').select("count(distinct(owner)) as total, owner_chain_type").group(:owner_chain_type).as_json
+      chain_type_num = Das::AccountInfo.where.not(account: '').select("count(distinct(owner)) as total, owner_chain_type").group(:owner_chain_type).as_json
       data = {}
       Das::AccountInfo::CHAIN_TYPE.each do |k, v|
         data[v] = chain_type_num.find{|t| t['owner_chain_type'] == k}.try(:[], 'total').to_i
@@ -19,7 +19,7 @@ module Das
     end
 
     def self.account_chain_num
-      chain_type_num = Das::AccountInfo.where.not(owner: '0x0000000000000000000000000000000000000000').select("count(*) as total, owner_chain_type").group(:owner_chain_type).as_json
+      chain_type_num = Das::AccountInfo.where.not(account: '').select("count(*) as total, owner_chain_type").group(:owner_chain_type).as_json
       data = {}
       Das::AccountInfo::CHAIN_TYPE.each do |k, v|
         data[v] = chain_type_num.find{|t| t['owner_chain_type'] == k}.try(:[], 'total').to_i
@@ -66,7 +66,7 @@ module Das
 
     def self.daily_new_owner(begin_at, end_at, owner_chain_types)
       arr = Das::AccountInfo.select("date,count(owner) as total")
-                .from("(select owner, DATE_FORMAT(FROM_UNIXTIME(min(registered_at)),'%Y-%m-%d') as date,min(registered_at) as registered_at,min(owner_chain_type) as min_type from t_account_info group by OWNER) ua")
+                .from("(select owner, DATE_FORMAT(FROM_UNIXTIME(min(registered_at)),'%Y-%m-%d') as date,min(registered_at) as registered_at,min(owner_chain_type) as min_type from t_account_info where account != '' group by OWNER) ua")
                 .where("min_type in (#{owner_chain_types.join(',')}) and registered_at >= #{begin_at} and registered_at <= #{end_at}")
                 .group('date').order('date asc').as_json(:except => :id)
       complete_date(Time.at(begin_at), Time.at(end_at), arr, {'total' => 0})
