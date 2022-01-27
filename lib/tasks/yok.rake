@@ -11,5 +11,11 @@ namespace :yok do
     end
     print "binance_yok end\n"
   end
+
+  desc "DRM"
+  task drm_alert: :environment do
+    RecommandList.post_alert('DRM REBASE ALERT')
+  end
+
 end
 
