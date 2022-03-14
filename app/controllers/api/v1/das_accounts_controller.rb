@@ -63,4 +63,24 @@ class Api::V1::DasAccountsController < ActionController::API
   def cloud_word
     render json: Word.order('num desc').as_json(:except => :id), status: :ok
   end
+
+  def latest_bit_accounts
+    render json: Das::AccountInfo.latest_bit_accounts(params[:page_index], params[:limit], params[:timestamp], params[:direction]), status: :ok
+  end
+
+  # def get_accounts_by_bit
+  #   account = Das::AccountInfo.find_by(account: params[:account])
+  #   datas = Das::AccountInfo.where(owner: account.owner).page(params[:page_index]).per(params[:limit])
+  #   {
+  #       page_index: data.current_page,
+  #       pages: datas.total_pages,
+  #       account_info: {
+  #           owner_address: account.owner,
+  #           owner_chain_type: account.owner_chain_type,
+  #       }
+  #   }
+  #
+  # end
+
+
 end

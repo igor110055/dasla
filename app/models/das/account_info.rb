@@ -5,6 +5,7 @@ module Das
 
     has_many :rebate_infos, class_name: 'Das::RebateInfo',foreign_key: :inviter_id, primary_key: :account_id
     belongs_to :reverse_info, class_name: 'Das::ReverseInfo',foreign_key: :owner, primary_key: :address
+    belongs_to :rebate_info, class_name: 'Das::ReverseInfo',foreign_key: :invitee_id, primary_key: :account_id
 
     CHAIN_TYPE = {0 => 'CKB', 1 => 'ETH', 2 => 'BTC', 3 => 'TRON'}
     STATUS = {-1 => 'not_open_register', 0 => 'normal', 1 => 'on_sale', 2 => 'on_auction'}
@@ -86,6 +87,28 @@ module Das
          new_array << (check_data.present? ? check_data : {'date' => date.strftime('%Y-%m-%d')}.merge(default))
       end
       new_array
+    end
+
+    def self.latest_bit_accounts(page = 1, count = 20, timestamp = '', direction = 'before')
+      datas = Das::AccountInfo.joins('left join t_rebate_info on t_rebate_info.invitee_id = t_account_info.account_id')
+          .select('distinct(t_account_info.id) id, account, registered_at, expired_at')
+          .where.not(account: '')
+
+      if timestamp.present?
+        less = direction == 'before' ? '<' : '>'
+        datas = datas.where("registered_at #{less} ?", timestamp.to_i)
+      end
+      data = datas.order('registered_at desc').page(page).per(count)
+
+      {page_index: data.current_page,
+       pages: data.total_pages,
+       accounts: data.map{|i|
+         {account: i.account,
+          registered_at: i.registered_at,
+          expired_at: i.expired_at,
+          inviter_account: i.rebate_info&.account_info&.account}
+          }
+      }
     end
     
   end
