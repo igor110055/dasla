@@ -105,7 +105,7 @@ module Das
          {account: i.account,
           registered_at: i.registered_at,
           expired_at: i.expired_at,
-          inviter_account: i.rebate_info&.account_info&.account}
+          inviter_account: i.rebate_info&.account_info&.account.to_s}
           }
       }
     end
