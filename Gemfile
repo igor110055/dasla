@@ -62,10 +62,11 @@ gem 'twitter'
 
 gem 'rest-client'
 
-gem 'ethereum.rb'
-
-gem 'eth'
+# gem 'ethereum.rb'
+#
+# gem 'eth'
 
 gem 'settingslogic'
 
 gem 'rack-cors'
+gem 'kaminari'
