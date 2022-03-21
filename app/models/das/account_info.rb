@@ -63,7 +63,7 @@ module Das
       arr = Das::AccountInfo.where("registered_at > ? and registered_at < ?", begin_at, end_at).where(owner_chain_type: owner_chain_types)
           .select("DATE_FORMAT(FROM_UNIXTIME(registered_at),'%Y-%m-%d') date,count(*) as total, sum(case when length(account) = 8  then 1 else 0 end) four_length_count")
           .group('date').order('date asc').as_json(:except => :id)
-      complete_date(Time.at(begin_at), Time.at(end_at), arr, {'total' => 0})
+      complete_date(Time.at(begin_at), Time.at(end_at), arr, {'total' => 0, 'four_length_count' => 0})
     end
 
     def self.daily_new_owner(begin_at, end_at, owner_chain_types)
@@ -147,7 +147,7 @@ module Das
             }
         }
       else
-        render json: {}, status: :ok
+        {}
       end
     end
     
