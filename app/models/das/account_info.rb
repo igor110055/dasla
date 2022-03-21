@@ -60,7 +60,7 @@ module Das
 
     def self.daily_reg_count(begin_at, end_at, owner_chain_types)
       arr = Das::AccountInfo.where("registered_at > ? and registered_at < ?", begin_at, end_at).where(owner_chain_type: owner_chain_types)
-          .select("DATE_FORMAT(FROM_UNIXTIME(registered_at),'%Y-%m-%d') date,count(*) as total")
+          .select("DATE_FORMAT(FROM_UNIXTIME(registered_at),'%Y-%m-%d') date,count(*) as total, sum(case when length(account) = 8  then 1 else 0 end) four_length_count")
           .group('date').order('date asc').as_json(:except => :id)
       complete_date(Time.at(begin_at), Time.at(end_at), arr, {'total' => 0})
     end
@@ -82,12 +82,22 @@ module Das
 
     def self.complete_date(begin_at, end_at , array, default = {})
       new_array = []
+      CSV.open("public/reg_owner.csv", 'wb') do |csv|
+      csv << ['date', 'four_account_num', 'other_account_num']
       (begin_at.to_date..end_at.to_date).each do |date|
+        datas = Das::AccountInfo.where("registered_at > ? and registered_at <= ?", date.to_time.to_i, (date + 1.day).to_time.to_i).select("(length(account) - 4) account_length, count(*) account_num").group('account_length').as_json
+
+        csv << [date.strftime('%Y-%m-%d'), datas.select{|i| i['account_length'] == 4}.sum{|i| i['account_num']}, datas.select{|i| i['account_length'] != 4}.sum{|i| i['account_num']}]
+
          check_data = array.find{|i| i['date'] ==  date.strftime('%Y-%m-%d')}
          new_array << (check_data.present? ? check_data : {'date' => date.strftime('%Y-%m-%d')}.merge(default))
       end
       new_array
+      end
     end
+
+
+
 
     def self.latest_bit_accounts(page = 1, count = 20, timestamp = '', direction = 'before')
       datas = Das::AccountInfo.joins('left join t_rebate_info on t_rebate_info.invitee_id = t_account_info.account_id')
