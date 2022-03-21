@@ -6,6 +6,7 @@ module Das
     has_many :rebate_infos, class_name: 'Das::RebateInfo',foreign_key: :inviter_id, primary_key: :account_id
     belongs_to :reverse_info, class_name: 'Das::ReverseInfo',foreign_key: :owner, primary_key: :address
     has_one :rebate_info, class_name: 'Das::RebateInfo',foreign_key: :invitee_id, primary_key: :account_id
+    has_one :trade_info, class_name: 'Das::TradeInfo',foreign_key: :account_id, primary_key: :account_id
 
     CHAIN_TYPE = {0 => 'CKB', 1 => 'ETH', 2 => 'BTC', 3 => 'TRON'}
     STATUS = {-1 => 'not_open_register', 0 => 'normal', 1 => 'on_sale', 2 => 'on_auction'}
@@ -96,9 +97,6 @@ module Das
       end
     end
 
-
-
-
     def self.latest_bit_accounts(page = 1, count = 20, timestamp = '', direction = 'before')
       datas = Das::AccountInfo.joins('left join t_rebate_info on t_rebate_info.invitee_id = t_account_info.account_id')
           .select('distinct(t_account_info.id) id, account, registered_at, expired_at, account_id')
@@ -118,6 +116,46 @@ module Das
           inviter_account: i.rebate_info&.account_info&.account.to_s}
           }
       }
+    end
+
+    def self.get_accounts_by_bit(account, page = 1, limit = 20)
+      if account = Das::AccountInfo.find_by(account: account)
+        datas = Das::AccountInfo.includes({rebate_info: :account_info}, :trade_info).where(owner: account.owner).page(page).per(limit)
+        {
+            page_index: datas.current_page,
+            pages: datas.total_pages,
+            owner_address: account.owner,
+            reverse_record: account.reverse_info&.account,
+            account_info: {
+                owner_chain_type: account.owner_chain_type,
+                account: account.account,
+                registered_at: account.registered_at,
+                expired_at: account.expired_at,
+                inviter: account.rebate_info&.account_info&.account.to_s,
+                status: account.trade_info&.status.to_s,
+                price_ckb: account.trade_info&.price_ckb.to_s,
+                price_usd: account.trade_info&.price_usd.to_s,
+                price_rate: account.trade_info&.price_rate.to_s,
+                description: account.trade_info&.description.to_s,
+            },
+            accounts: datas.map{|account|
+              {
+                  owner_chain_type: account.owner_chain_type,
+                  account: account.account,
+                  registered_at: account.registered_at,
+                  expired_at: account.expired_at,
+                  inviter: account.rebate_info&.account_info&.account.to_s,
+                  status: account.trade_info&.status.to_s,
+                  price_ckb: account.trade_info&.price_ckb.to_s,
+                  price_usd: account.trade_info&.price_usd.to_s,
+                  profit_rate: account.trade_info&.profit_rate.to_s,
+                  description: account.trade_info&.description.to_s,
+              }
+            }
+        }
+      else
+        render json: {}, status: :ok
+      end
     end
     
   end

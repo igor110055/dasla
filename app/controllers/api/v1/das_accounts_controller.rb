@@ -56,7 +56,7 @@ class Api::V1::DasAccountsController < ActionController::API
   end
 
   def account_length
-    render json: Das::AccountInfo.where.not(account: '').select('(length(account) - 4) account_length, count(*) account_num')
+      render json: Das::AccountInfo.where.not(account: '').select('(length(account) - 4) account_length, count(*) account_num')
                      .group('account_length').order('account_num desc').as_json(:except => :id), status: :ok
   end
 
@@ -68,19 +68,9 @@ class Api::V1::DasAccountsController < ActionController::API
     render json: Das::AccountInfo.latest_bit_accounts(params[:page_index], params[:limit], params[:timestamp], params[:direction]), status: :ok
   end
 
-  # def get_accounts_by_bit
-  #   account = Das::AccountInfo.find_by(account: params[:account])
-  #   datas = Das::AccountInfo.where(owner: account.owner).page(params[:page_index]).per(params[:limit])
-  #   {
-  #       page_index: data.current_page,
-  #       pages: datas.total_pages,
-  #       account_info: {
-  #           owner_address: account.owner,
-  #           owner_chain_type: account.owner_chain_type,
-  #       }
-  #   }
-  #
-  # end
+  def get_accounts_by_bit
+    render json: Das::AccountInfo.get_accounts_by_bit(params[:account], params[:page_index], params[:limit]), status: :ok
+  end
 
 
 end
