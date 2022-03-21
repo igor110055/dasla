@@ -81,21 +81,21 @@ module Das
       complete_date(Time.at(begin_at/1000), Time.at(end_at/1000), arr, {'ckb_total' => 0, 'usd_total' => 0})
     end
 
-    def self.complete_date(begin_at, end_at , array, default = {})
-      new_array = []
-      CSV.open("public/reg_owner.csv", 'wb') do |csv|
-      csv << ['date', 'four_account_num', 'other_account_num']
-      (begin_at.to_date..end_at.to_date).each do |date|
-        datas = Das::AccountInfo.where("registered_at > ? and registered_at <= ?", date.to_time.to_i, (date + 1.day).to_time.to_i).select("(length(account) - 4) account_length, count(*) account_num").group('account_length').as_json
-
-        csv << [date.strftime('%Y-%m-%d'), datas.select{|i| i['account_length'] == 4}.sum{|i| i['account_num']}, datas.select{|i| i['account_length'] != 4}.sum{|i| i['account_num']}]
-
-         check_data = array.find{|i| i['date'] ==  date.strftime('%Y-%m-%d')}
-         new_array << (check_data.present? ? check_data : {'date' => date.strftime('%Y-%m-%d')}.merge(default))
-      end
-      new_array
-      end
-    end
+    # def self.complete_date(begin_at, end_at , array, default = {})
+    #   new_array = []
+    #   CSV.open("public/reg_owner.csv", 'wb') do |csv|
+    #   csv << ['date', 'four_account_num', 'other_account_num']
+    #   (begin_at.to_date..end_at.to_date).each do |date|
+    #     datas = Das::AccountInfo.where("registered_at > ? and registered_at <= ?", date.to_time.to_i, (date + 1.day).to_time.to_i).select("(length(account) - 4) account_length, count(*) account_num").group('account_length').as_json
+    #
+    #     csv << [date.strftime('%Y-%m-%d'), datas.select{|i| i['account_length'] == 4}.sum{|i| i['account_num']}, datas.select{|i| i['account_length'] != 4}.sum{|i| i['account_num']}]
+    #
+    #      check_data = array.find{|i| i['date'] ==  date.strftime('%Y-%m-%d')}
+    #      new_array << (check_data.present? ? check_data : {'date' => date.strftime('%Y-%m-%d')}.merge(default))
+    #   end
+    #   new_array
+    #   end
+    # end
 
     def self.latest_bit_accounts(page = 1, count = 20, timestamp = '', direction = 'before')
       datas = Das::AccountInfo.joins('left join t_rebate_info on t_rebate_info.invitee_id = t_account_info.account_id')
