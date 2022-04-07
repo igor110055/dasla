@@ -72,5 +72,17 @@ class Api::V1::DasAccountsController < ActionController::API
     render json: Das::AccountInfo.get_accounts_by_bit(params[:account], params[:page_index], params[:limit]), status: :ok
   end
 
+  def get_tx_parser
+    params[:type] ||= 'hash'
+    return render json: {msg: 'param is error'}, status: :error if !['witness', 'hash', 'json'].include?(params[:type]) || params[:data].blank?
+    case params[:type]
+      when 'json'
+        data = Base64::decode64(params[:data].gsub(/\W/, ''))
+      when 'hash','witness'
+        data = params[:data].gsub(/\W/, '')
+    end
+    return render json: JSON.parse(`~/das_parser_tool/bin/linux/tx_parser -c ~/das_parser_tool/config/config_mainnet.yaml #{params[:type]} #{data}`), status: :ok
+  end
+
 
 end
