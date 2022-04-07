@@ -74,7 +74,7 @@ class Api::V1::DasAccountsController < ActionController::API
 
   def get_tx_parser
     params[:type] ||= 'hash'
-    return render json: {msg: 'param is error'}, status: :error if !['witness', 'hash', 'json'].include?(params[:type]) || params[:data].blank?
+    return render json: {msg: 'param is error'}, status: :ok if !['witness', 'hash', 'json'].include?(params[:type]) || params[:data].blank?
     case params[:type]
       when 'json'
         data = Base64::decode64(params[:data].gsub(/\W/, ''))
