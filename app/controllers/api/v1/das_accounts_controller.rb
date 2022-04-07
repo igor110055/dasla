@@ -76,8 +76,8 @@ class Api::V1::DasAccountsController < ActionController::API
     params[:type] ||= 'hash'
     return render json: {msg: 'param is error'}, status: :ok if !['witness', 'hash', 'json'].include?(params[:type]) || params[:data].blank?
     case params[:type]
-      when 'json'
-        data = Base64::decode64(params[:data].gsub(/\W/, ''))
+      # when 'json'
+      #   data = Base64::decode64(params[:data].gsub(/\W/, ''))
       when 'hash','witness'
         data = params[:data].gsub(/\W/, '')
     end
