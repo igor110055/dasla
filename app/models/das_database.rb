@@ -12,6 +12,7 @@ module DasDatabase
   @@establish = {
       :adapter => DasDatabaseConfig.adapter,
       :host => DasDatabaseConfig.host,
+      :encoding => DasDatabaseConfig.encoding,
       :port => DasDatabaseConfig.port,
       :username => DasDatabaseConfig.username,
       :password => DasDatabaseConfig.password,
