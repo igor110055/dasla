@@ -96,10 +96,13 @@ module Das
           .where.not(account: '')
 
       if timestamp.present?
-        less = direction == 'before' ? '<' : '>'
-        datas = datas.where("registered_at #{less} ?", timestamp.to_i)
+        if direction == 'before'
+          datas = datas.where("registered_at < ?", timestamp.to_i).order('registered_at desc')
+        else
+          datas = datas.where("registered_at > ?", timestamp.to_i).order('registered_at asc')
+        end
       end
-      data = datas.order('registered_at desc').page(page).per(count).includes(rebate_info: :account_info)
+      data = datas.page(page).per(count).includes(rebate_info: :account_info)
       {page_index: data.current_page,
        pages: data.total_pages,
        accounts: data.map{|i|
