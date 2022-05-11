@@ -56,8 +56,8 @@ class Api::V1::DasAccountsController < ActionController::API
   end
 
   def account_length
-      render json: Das::AccountInfo.where.not(account: '').select('(length(account) - 4) account_length, count(*) account_num')
-                     .group('account_length').order('account_num desc').as_json(:except => :id), status: :ok
+      render json: Das::AccountInfo.where.not(account: '').select('(length(account) - 4) length, count(*) value')
+                     .group('length').order('value desc').as_json(:except => :id), status: :ok
   end
 
   def cloud_word
