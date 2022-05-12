@@ -17,10 +17,10 @@ namespace :das do
       else
         arr.unshift({ :address => data['asset']['asset_contract']['address'],
                 :decimals => data['payment_token']['decimals'],
-                :image_url => data['payment_token']['image_url'],
+                :image_url => data['asset']['image_url'],
                 :symbol => data['payment_token']['symbol'],
                 :usd_price => data['payment_token']['usd_price'],
-                :eth_price => data['payment_token']['eth_price'],
+                :total_price => data['total_price'],
                 :quantity => data['quantity'],
                 :name => data['asset']['name'],
                 :token_id => data['asset']['token_id']
