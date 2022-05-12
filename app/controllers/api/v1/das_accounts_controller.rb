@@ -84,5 +84,7 @@ class Api::V1::DasAccountsController < ActionController::API
     return render json: JSON.parse(`~/das_parser_tool/bin/linux/tx_parser -c ~/das_parser_tool/config/config_mainnet.yaml #{params[:type]} #{data}`), status: :ok
   end
 
-
+  def get_recent_ens_order
+    return render json: Setting.ens_orders
+  end
 end

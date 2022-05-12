@@ -5,7 +5,7 @@ Rails.application.routes.draw do
       resources :das_accounts, only: [:index] do
         collection do
           get :sync_total, :daily_reg_count, :daily_new_owner, :day_deal, :invites_leaderboard, :account_length, :cloud_word,
-              :latest_bit_accounts, :get_accounts_by_bit
+              :latest_bit_accounts, :get_accounts_by_bit, :get_recent_ens_order
           post :get_tx_parser
         end
       end

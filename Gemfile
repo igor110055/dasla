@@ -69,4 +69,5 @@ gem 'rest-client'
 gem 'settingslogic'
 
 gem 'rack-cors'
-gem 'kaminari'
+
+gem 'rails-settings-cached'
