@@ -12,7 +12,9 @@ namespace :das do
     datas = JSON.parse RestClient.get(url, headers={"Accept" => 'application/json', "X-API-KEY" => Setting.os_key.to_s})
     arr = Setting.ens_orders || []
     datas['asset_events'].reverse.each do |data|
-      unless arr.map{|i| i['token_id']}.include?(data['asset']['token_id'])
+      if aa = arr.find{|i| i['token_id'] == data['asset']['token_id']}
+        aa['name'] = data['asset']['name']
+      else
         arr.unshift({ :address => data['asset']['asset_contract']['address'],
                 :decimals => data['payment_token']['decimals'],
                 :image_url => data['payment_token']['image_url'],
