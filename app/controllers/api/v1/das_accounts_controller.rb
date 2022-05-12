@@ -85,6 +85,7 @@ class Api::V1::DasAccountsController < ActionController::API
   end
 
   def get_recent_ens_order
-    return render json: Setting.ens_orders
+    limit = params[:limit] ||= 100
+    return render json: Setting.ens_orders[0..(limit - 1)]
   end
 end
