@@ -16,11 +16,11 @@ namespace :das do
         aa['name'] = data['asset']['name']
       else
         arr.unshift({ :address => data['asset']['asset_contract']['address'],
-                :decimals => data['payment_token']['decimals'],
+                # :decimals => data['payment_token']['decimals'],
                 :image_url => data['asset']['image_url'],
                 :symbol => data['payment_token']['symbol'],
                 :usd_price => data['payment_token']['usd_price'],
-                :total_price => data['total_price'],
+                :total_price => data['total_price'].to_f/10**data['payment_token']['decimals'].to_i,
                 :quantity => data['quantity'],
                 :name => data['asset']['name'],
                 :token_id => data['asset']['token_id']
