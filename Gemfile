@@ -71,3 +71,5 @@ gem 'settingslogic'
 gem 'rack-cors'
 
 gem 'rails-settings-cached'
+
+gem 'kaminari'
