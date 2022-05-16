@@ -3,6 +3,7 @@ class Setting < RailsSettings::Base
   cache_prefix { "v1" }
 
   field :os_key, type: :string
+  field :sign, type: :string
   field :ens_orders, type: :array
   # Define your fields
   # field :host, type: :string, default: "http://localhost:3000"

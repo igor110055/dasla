@@ -86,6 +86,9 @@ class Api::V1::DasAccountsController < ActionController::API
 
   def get_recent_ens_order
     limit = params[:limit] ||= 100
+    return render json: [] if params[:t].blank? || params[:s].blank?
+    return render json: [] if (params[:t].to_i/1000) < (Time.now - 30.second).to_i || (params[:t].to_i/1000) > (Time.now + 30.second).to_i
+    return render json: [] if OpenSSL::Digest.new('MD5').update((params[:t].to_s + Setting.sign.to_s)).hexdigest != params[:s]
     return render json: Setting.ens_orders[0..(limit - 1)]
   end
 end
