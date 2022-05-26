@@ -1,0 +1,2 @@
+class EthBit < ApplicationRecord
+end

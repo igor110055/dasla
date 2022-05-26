@@ -73,3 +73,5 @@ gem 'rack-cors'
 gem 'rails-settings-cached'
 
 gem 'kaminari'
+
+gem 'rbnacl'

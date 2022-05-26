@@ -24,13 +24,18 @@ namespace :das do
                 :quantity => data['quantity'],
                 :name => data['asset']['name'],
                 :token_id => data['asset']['token_id'],
-                :event_timestamp => data['event_timestamp']
+                :event_timestamp => data['event_timestamp'],
+                :is_post_twitter => false,
+                :status => Das::AccountInfo.check_ens_account(data['asset']['name'][0..-5])
               })
       end
     end
     Setting.ens_orders = arr.uniq[0..99]
+    if set = Setting.ens_orders[0] && set[:total_price].to_f > Setting.ens_price.to_f && set[:status] == 0 && !set[:is_post_twitter]
+      $twitter_client.update("🚀 Register your favourite DAS accounts  #domains  #NFTs #{set[:name][0..-5]}.bit")
+      set[:is_post_twitter] = true
+    end
   end
-
 
 end
 

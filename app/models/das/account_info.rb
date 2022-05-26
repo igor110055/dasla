@@ -153,6 +153,30 @@ module Das
         {}
       end
     end
+
+    def self.check_ens_account(ens)
+      #status 2 位数小于4或者大于20 5 预留账号 4 已注册 3未开放 0可注册
+      if ens.size < 4 || ens.size > 20
+        return 2
+      end
+      ens = ens + '.bit'
+      reserved = JSON.parse File.read('public/reserved.json')
+      if reserved.include? ens
+        return 5
+      end
+      if Das::AccountInfo.exists?(account: ens)
+        return 4
+      end
+      #大于9位
+      if ens.size > 13
+        return 0
+      end
+
+      if ::RbNaCl::Hash::Blake2b.digest('22aa334.bit', {personal: "2021-07-22 12:00", digest_size: 32})[0..4].unpack("N")[0] < (4294967295*0.6)
+        return 0
+      end
+      return 3
+    end
     
   end
 end
