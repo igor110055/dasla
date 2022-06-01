@@ -51,7 +51,7 @@ https://opensea.io/assets/ethereum/#{aa.address}/#{aa.token_id}")
     end
 
     if aa = EthBit.where(category: 'bit', offer_send_twitter: 1).last
-      $twitter_client.update("🎉 #{aa.name} has a new bid of #{aa.total_price} WETH placed by #{aa.from_username.presence || '***'}.👇
+      $twitter_client.update("🎉 #{aa.name} has a new bid of #{aa.total_price} WETH  #{aa.from_username.present? ? ('placed by' + aa.from_username) : ''}.👇
 
 https://opensea.io/assets/ethereum/#{aa.address}/#{aa.token_id}")
       aa.update(offer_send_twitter: 2)
