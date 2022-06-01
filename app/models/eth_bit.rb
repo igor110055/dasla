@@ -76,7 +76,8 @@ https://opensea.io/assets/ethereum/#{aa.address}/#{aa.token_id}")
       $twitter_client.update("🔸#{aa.name} bought for #{aa.total_price} WETH on OpenSea.
 
 🚀Grab #{aa.name[0..-5]}.bit now! .bit, your Web3 identity.
-​https://app.did.id/account/register/#{aa.name[0..-5]}.bit?inviter=cryptofans.bit&channel=cryptofans.bit​")
+
+https://app.did.id/account/register/#{aa.name[0..-5]}.bit?inviter=cryptofans.bit&channel=cryptofans.bit​")
       aa.update(deal_send_twitter: 2)
       return
     end
