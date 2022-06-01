@@ -15,9 +15,9 @@ class EthBit < ApplicationRecord
                                 :name => data['asset']['name'],
                                 :address => data['asset']['asset_contract']['address'],
                                 :image_url => data['asset']['image_url'],
-                                :symbol => data['payment_token']['symbol'],
-                                :usd_price => data['payment_token']['usd_price'],
-                                :total_price => data['total_price'].to_f/10**data['payment_token']['decimals'].to_i,
+                                :symbol => (data['payment_token']['symbol'] rescue nil),
+                                :usd_price => (data['payment_token']['usd_price'] rescue nil),
+                                :total_price => (data['total_price'].to_f/10**data['payment_token']['decimals'].to_i rescue nil),
                                 :quantity => data['quantity'],
                                 :event_timestamp => data['event_timestamp'],
                                 :from_username => (data['from_account']['user']['username'] rescue '')
@@ -32,7 +32,7 @@ class EthBit < ApplicationRecord
           when 'successful'
             bit.deal_send_twitter = 1 if bit.deal_send_twitter == 0
           when 'transfer'
-            bit.mint_send_twitter = 1 if bit.mint_send_twitter == 0 && (data['from_account']['user']['username'] == 'NullAddress')
+            bit.mint_send_twitter = 1 if bit.mint_send_twitter == 0 && (bit.from_username == 'NullAddress')
           when 'offer_entered'
             bit.offer_send_twitter = 1 if bit.offer_send_twitter == 0
         end
