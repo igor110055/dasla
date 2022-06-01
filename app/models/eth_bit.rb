@@ -41,7 +41,7 @@ class EthBit < ApplicationRecord
   end
 
   def self.check_twitter
-    if aa = EthBit.where(category: 'bit', deal_send_twitter: 1).limit(10)
+    if aa = EthBit.where(category: 'bit', deal_send_twitter: 1).last
       $twitter_client.update("🎉 #{aa.name} bought for #{aa.total_price} WETH on OpenSea.👇
 
 https://opensea.io/assets/ethereum/#{aa.address}/#{aa.token_id}")
@@ -49,7 +49,7 @@ https://opensea.io/assets/ethereum/#{aa.address}/#{aa.token_id}")
       return
     end
 
-    if aa = EthBit.where(category: 'bit', offer_send_twitter: 1).limit(10)
+    if aa = EthBit.where(category: 'bit', offer_send_twitter: 1).last
       $twitter_client.update("🎉 #{aa.name} has a new bid of #{aa.total_price} WETH placed by #{aa.from_username.presence || '***'}.👇
 
 https://opensea.io/assets/ethereum/#{aa.address}/#{aa.token_id}")
@@ -64,7 +64,7 @@ https://opensea.io/assets/ethereum/#{aa.address}/#{aa.token_id}")
     #   return
     # end
 
-    if aa = EthBit.where(category: 'bit', mint_send_twitter: 1).limit(10)
+    if aa = EthBit.where(category: 'bit', mint_send_twitter: 1).last
       $twitter_client.update("🎉#{aa.name} was just minted on OpenSea, take a look and snatch it?  .bit, your Web3 identity.👇
 
 https://opensea.io/assets/ethereum/#{aa.address}/#{aa.token_id}")
@@ -73,7 +73,7 @@ https://opensea.io/assets/ethereum/#{aa.address}/#{aa.token_id}")
     end
 
     if aa = EthBit.where(category: 'eth', deal_send_twitter: 1).last
-      $twitter_client.update("🔸#{aa.name} bought for #{aa.total_price} ETH on OpenSea.
+      $twitter_client.update("🔸#{aa.name} bought for #{aa.total_price} WETH on OpenSea.
 
 🚀Grab #{aa.name[0..-5]}.bit now! .bit, your Web3 identity.
 ​https://app.did.id/account/register/#{aa.name[0..-5]}.bit?inviter=cryptofans.bit&channel=cryptofans.bit​")
