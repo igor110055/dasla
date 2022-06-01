@@ -4,7 +4,7 @@ class CreateEthBits < ActiveRecord::Migration[6.1]
       t.string :category
       t.boolean :mint, :default => true
       t.integer :mint_send_twitter, :default => 0
-      t.bollean :pending, :default => false
+      t.boolean :pending, :default => false
       t.integer :pending_send_twitter, :default => 0
       t.boolean :deal, :default => false
       t.integer :deal_send_twitter, :default => 0
