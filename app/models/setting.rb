@@ -5,6 +5,7 @@ class Setting < RailsSettings::Base
   field :os_key, type: :string
   field :sign, type: :string
   field :ens_orders, type: :array
+  field :ens_price, type: :string
   # Define your fields
   # field :host, type: :string, default: "http://localhost:3000"
   # field :default_locale, default: "en", type: :string
