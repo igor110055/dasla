@@ -9,6 +9,7 @@ class EthBit < ApplicationRecord
     end
     datas = JSON.parse RestClient.get(url, headers={"Accept" => 'application/json', "X-API-KEY" => Setting.os_key.to_s})
     datas['asset_events'].each do |data|
+      next if !['successful', 'transfer', 'offer_entered'].include?(data['event_type'])
       bit = EthBit.find_or_initialize_by(category: type, token_id: data['asset']['token_id'])
       bit.assign_attributes({
                                 :name => data['asset']['name'],
@@ -45,7 +46,7 @@ class EthBit < ApplicationRecord
       $twitter_client.update("🎉 #{aa.name} bought for #{aa.total_price} WETH on OpenSea.👇
 
 https://opensea.io/assets/ethereum/#{aa.address}/#{aa.token_id}")
-      aa.update_all(deal_send_twitter: 2)
+      aa.update(deal_send_twitter: 2)
       return
     end
 
@@ -53,7 +54,7 @@ https://opensea.io/assets/ethereum/#{aa.address}/#{aa.token_id}")
       $twitter_client.update("🎉 #{aa.name} has a new bid of #{aa.total_price} WETH placed by #{aa.from_username.presence || '***'}.👇
 
 https://opensea.io/assets/ethereum/#{aa.address}/#{aa.token_id}")
-      aa.update_all(deal_send_twitter: 2)
+      aa.update(offer_send_twitter: 2)
       return
     end
 
@@ -68,7 +69,7 @@ https://opensea.io/assets/ethereum/#{aa.address}/#{aa.token_id}")
       $twitter_client.update("🎉#{aa.name} was just minted on OpenSea, take a look and snatch it?  .bit, your Web3 identity.👇
 
 https://opensea.io/assets/ethereum/#{aa.address}/#{aa.token_id}")
-      aa.update_all(mint_send_twitter: 2)
+      aa.update(mint_send_twitter: 2)
       return
     end
 

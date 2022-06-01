@@ -155,7 +155,10 @@ module Das
     end
 
     def self.check_ens_account(ens)
-      #status 2 位数小于4或者大于20 5 预留账号 4 已注册 3未开放 0可注册
+      #status 2 位数小于4或者大于20 5 预留账号 4 已注册 3未开放 0可注册 6暂不推荐
+      unless ens =~ /^[0-9a-zA-Z]*$/
+        return 6
+      end
       if ens.size < 4 || ens.size > 20
         return 2
       end
