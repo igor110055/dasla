@@ -172,7 +172,7 @@ module Das
         return 0
       end
 
-      if ::RbNaCl::Hash::Blake2b.digest('22aa334.bit', {personal: "2021-07-22 12:00", digest_size: 32})[0..4].unpack("N")[0] < (4294967295*0.6)
+      if ::RbNaCl::Hash::Blake2b.digest(ens, {personal: "2021-07-22 12:00", digest_size: 32})[0..4].unpack("N")[0] < (4294967295*0.6)
         return 0
       end
       return 3

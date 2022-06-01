@@ -9,7 +9,7 @@ class EthBit < ApplicationRecord
     end
     datas = JSON.parse RestClient.get(url, headers={"Accept" => 'application/json', "X-API-KEY" => Setting.os_key.to_s})
     datas['asset_events'].each do |data|
-      bit = EthBit.find_or_initializer_by(category: type, token_id: data['asset']['token_id'])
+      bit = EthBit.find_or_initialize_by(category: type, token_id: data['asset']['token_id'])
       bit.assign_attributes({
                                 :name => data['asset']['name'],
                                 :address => data['asset']['asset_contract']['address'],
@@ -19,10 +19,10 @@ class EthBit < ApplicationRecord
                                 :total_price => data['total_price'].to_f/10**data['payment_token']['decimals'].to_i,
                                 :quantity => data['quantity'],
                                 :event_timestamp => data['event_timestamp'],
-                                :from_username => data['from_account']['user']['username']
+                                :from_username => (data['from_account']['user']['username'] rescue '')
                             })
       if bit.new_record?
-        if type == 'ens' && data['asset']['name'].include?('ens') && Das::AccountInfo.check_ens_account(data['asset']['name'][0..-5]) == 0 && bit.total_price.to_f > Setting.ens_price.to_f
+        if type == 'eth' && data['asset']['name'].include?('eth') && Das::AccountInfo.check_ens_account(data['asset']['name'][0..-5]) == 0 && bit.total_price.to_f > Setting.ens_price.to_f
           bit.deal_send_twitter = 1
         end
       end
@@ -72,7 +72,7 @@ https://opensea.io/assets/ethereum/#{aa.address}/#{aa.token_id}")
       return
     end
 
-    if aa = EthBit.where(category: 'ens', deal_send_twitter: 1).last
+    if aa = EthBit.where(category: 'eth', deal_send_twitter: 1).last
       $twitter_client.update("🔸#{aa.name} bought for #{aa.total_price} ETH on OpenSea.
 
 🚀Grab #{aa.name[0..-5]}.bit now! .bit, your Web3 identity.
