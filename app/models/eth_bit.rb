@@ -11,13 +11,21 @@ class EthBit < ApplicationRecord
     datas['asset_events'].each do |data|
       next if !['successful', 'transfer', 'offer_entered'].include?(data['event_type'])
       bit = EthBit.find_or_initialize_by(category: type, token_id: data['asset']['token_id'])
+      price = case data['event_type']
+                when 'successful'
+                  data['total_price'].to_f/10**data['payment_token']['decimals'].to_i rescue nil
+                when 'transfer'
+                  nil
+                when 'offer_entered'
+                  data['bid_amount'].to_f/10**data['payment_token']['decimals'].to_i rescue nil
+              end
       bit.assign_attributes({
                                 :name => data['asset']['name'],
                                 :address => data['asset']['asset_contract']['address'],
                                 :image_url => data['asset']['image_url'],
                                 :symbol => (data['payment_token']['symbol'] rescue nil),
                                 :usd_price => (data['payment_token']['usd_price'] rescue nil),
-                                :total_price => (data['total_price'].to_f/10**data['payment_token']['decimals'].to_i rescue nil),
+                                :total_price => price,
                                 :quantity => data['quantity'],
                                 :event_timestamp => data['event_timestamp'],
                                 :from_username => (data['from_account']['user']['username'] rescue '')
