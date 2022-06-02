@@ -51,9 +51,9 @@ class EthBit < ApplicationRecord
 
   def self.check_twitter
     if aa = EthBit.where(category: 'bit', deal_send_twitter: 1).last
-      $twitter_client.update("🎉 #{aa.name} bought for #{aa.total_price} WETH on OpenSea.👇
+      $twitter_client.update("🎉 #{aa.name} bought for #{aa.total_price} WETH on OpenSea.
 
-https://opensea.io/assets/ethereum/#{aa.address}/#{aa.token_id}")
+Visit #dasla ​https://das.la​ to grab a similar account? 👇")
       aa.update(deal_send_twitter: 2)
       return
     end
