@@ -9,7 +9,8 @@ namespace :das do
   desc 'get bit opensea'
   task get_bit_opensea: :environment do
     EthBit.get_bits('0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85', 'successful', 'eth')
-    EthBit.get_bits('0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85', '', 'bit')
+    EthBit.get_bits('0x60eB332Bd4A0E2a9eEB3212cFdD6Ef03Ce4CB3b5', '', 'bit')
+    EthBit.check_twitter
   end
 
   desc "get ens order"
